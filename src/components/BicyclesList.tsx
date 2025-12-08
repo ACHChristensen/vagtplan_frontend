@@ -12,7 +12,7 @@ export default function BicyclesList() {
   <ul>
     {bicycles.map((bike) => (
       <li key={bike.bicycleId}>
-        #{bike.bicycleNumber} - {bike.inOperate ? "In operation" : "Out of service"}
+        BicycleId: {bike.bicycleNumber} - Bike operation: {bike.inOperate ? "In operation" : "Out of service"}
       </li>
     ))}
   </ul>

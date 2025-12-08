@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:5209', // replace with your ASP.NET Core backend port
+      '/api': 'http://localhost:5209', // TODO: replace with deployed backend port
     },
   },
 });

@@ -1,11 +1,14 @@
-import BicyclesList from "./components/BicyclesList";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   return (
-    <div>
-      <h1>All Bicycles</h1>
-      <BicyclesList />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/*login page */}
+        <Route path="/" element={<LoginPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
