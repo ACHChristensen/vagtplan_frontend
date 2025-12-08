@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'https://vagtplanlaegning.onrender.com', // TODO: replace with deployed backend port
+      '/api': '', // TODO: replace with deployed backend port
     },
   },
 });
