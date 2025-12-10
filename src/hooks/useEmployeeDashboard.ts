@@ -1,9 +1,11 @@
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
+
 import type { Employee } from "../entities/Employee";
 import type { Route } from "../entities/Route";
 import type { MonthlyHoursRow } from "../entities/WorkHours";
 
+import { employeeService } from "../services/employeeService";
 import { workHoursService } from "../services/workHoursService";
 
 interface EmployeeDashboardData {
@@ -22,9 +24,6 @@ export const useEmployeeDashboard = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // ------------------------------
-    // Helper: Load last X months of hours
-    // ------------------------------
     const fetchWorkHoursForLastMonths = async (
       employeeId: number,
       monthsBack = 3
@@ -43,19 +42,16 @@ export const useEmployeeDashboard = () => {
           });
 
           if (rows.length > 0) {
-            results.push(rows[0]); // backend returns one row for the month
+            results.push(rows[0]);
           }
         } catch (err) {
           console.warn(`Failed to load hours for ${month}/${year}`, err);
         }
       }
 
-      return results.reverse(); // oldest → newest for chart display
+      return results.reverse();
     };
 
-    // ------------------------------
-    // Main data loader
-    // ------------------------------
     const fetchData = async () => {
       setLoading(true);
       setError(null);
@@ -64,48 +60,33 @@ export const useEmployeeDashboard = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found");
 
-        // Decode employee ID from JWT
+        // Decode employeeId from JWT
         const decoded = jwtDecode<{ nameid: string }>(token);
         const userId = Number(decoded.nameid);
+
         if (!userId) throw new Error("Token does not contain userId");
 
-        const apiUrl = import.meta.env["VITE_API_URL"];
-
-        // Fetch the employee
-        const employeeResponse = await fetch(`${apiUrl}/Employees/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!employeeResponse.ok)
-          throw new Error("Failed to fetch employee");
-
-        const employeeData: Employee = await employeeResponse.json();
+        // ------------------------------------
+        // Fetch employee using service
+        // ------------------------------------
+        const employeeData = await employeeService.getById(userId);
         setEmployee(employeeData);
 
         const employeeId = employeeData.employeeId;
 
-        // -----------------------------------------
-        // Fetch ONLY the employee's own routes
-        // -----------------------------------------
-        const routesResponse = await fetch(
-          `${apiUrl}/employee/get-employee-routes-by-id/${employeeId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+        // ------------------------------------
+        // Fetch employee routes using service
+        // ------------------------------------
+        const employeeRoutes = await employeeService.getRoutesByEmployeeId(
+          employeeId
         );
-
-        if (!routesResponse.ok)
-          throw new Error("Failed to fetch employee routes");
-
-        const employeeRoutes: Route[] = await routesResponse.json();
         setRoutes(employeeRoutes);
 
-        // -----------------------------------------
-        // Fetch 3 months of work hours
-        // -----------------------------------------
+        // ------------------------------------
+        // Fetch monthly work hours
+        // ------------------------------------
         const hours = await fetchWorkHoursForLastMonths(employeeId, 3);
         setWorkHours(hours);
-
       } catch (err: any) {
         console.error("Error fetching dashboard data:", err);
         setError(err.message || "Unknown error");

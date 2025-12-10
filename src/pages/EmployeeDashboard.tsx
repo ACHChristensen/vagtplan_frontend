@@ -14,10 +14,13 @@ import DashboardLayout, {
 } from "../components/DashboardLayout";
 
 import EditPersonalInfoModal from "../components/EditPersonalInfoModal";
+import ClockInOutSection from "../components/employee/ClockInOutSection";
 import PersonalInfoCard from "../components/employee/PersonalInfoCard";
 import RoutesList from "../components/employee/RoutesList";
-import WorkHoursChart from "../components/employee/WorkHoursChart";
 import ShiftsTable from "../components/employee/ShiftsTable";
+import WeatherSection from "../components/employee/WeatherSection";
+import WorkHoursChart from "../components/employee/WorkHoursChart";
+
 
 import type { Employee } from "../entities/Employee";
 import { useEmployeeDashboard } from "../hooks/useEmployeeDashboard";
@@ -37,6 +40,9 @@ const EmployeeDashboard = () => {
     shifts,
     loading: shiftsLoading,
     error: shiftsError,
+    clockMode,
+    clockIn,
+    clockOut,
   } = useEmployeeShifts();
 
   const { updateEmployee } = useUpdateEmployee();
@@ -46,14 +52,13 @@ const EmployeeDashboard = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEmployee, setModalEmployee] = useState<Employee | null>(null);
 
-  // Keep local employee synced with fetched employee
   useEffect(() => {
     setEmployee(fetchedEmployee ?? null);
   }, [fetchedEmployee]);
 
   const handleEditClick = () => {
     if (!employee) return;
-    setModalEmployee({ ...employee }); // Clone the object
+    setModalEmployee({ ...employee });
     setModalOpen(true);
   };
 
@@ -78,7 +83,6 @@ const EmployeeDashboard = () => {
     }
   };
 
-  // Convenience flags
   const hasRoutes = useMemo(() => routes && routes.length > 0, [routes]);
   const hasWorkHours = useMemo(
     () => workHours && workHours.length > 0,
@@ -86,12 +90,13 @@ const EmployeeDashboard = () => {
   );
   const hasShifts = useMemo(() => shifts && shifts.length > 0, [shifts]);
 
-  // Dashboard Navigation
   const navItems: DashboardNavItem[] = [
     { label: "Profile", targetId: "section-profile" },
-    { label: "Routes", targetId: "section-routes" },
+    { label: "Clock in/out", targetId: "section-clock" },
     { label: "Shifts", targetId: "section-shifts" },
     { label: "Work hours", targetId: "section-hours" },
+    { label: "Weather", targetId: "section-weather" },
+    { label: "Routes", targetId: "section-routes" },
   ];
 
   return (
@@ -115,7 +120,7 @@ const EmployeeDashboard = () => {
           </Alert>
         )}
 
-        {/* PROFILE SECTION */}
+        {/* PROFILE */}
         <Box id="section-profile">
           {employee && (
             <PersonalInfoCard user={employee} onEditClick={handleEditClick} />
@@ -129,19 +134,18 @@ const EmployeeDashboard = () => {
           )}
         </Box>
 
-        {/* ROUTES SECTION */}
-        <Box id="section-routes">
-          {hasRoutes && <RoutesList routes={routes} />}
-
-          {!loading && routes.length === 0 && (
-            <Alert status="info">
-              <AlertIcon />
-              No routes assigned.
-            </Alert>
-          )}
+        {/* CLOCK IN/OUT (button-only UX) */}
+        <Box id="section-clock">
+          <ClockInOutSection
+            mode={clockMode}
+            loading={shiftsLoading}
+            error={shiftsError}
+            onClockIn={clockIn}
+            onClockOut={clockOut}
+          />
         </Box>
 
-        {/* SHIFTS SECTION */}
+        {/* SHIFTS OVERVIEW */}
         <Box id="section-shifts">
           {shiftsLoading && <Spinner />}
 
@@ -152,9 +156,7 @@ const EmployeeDashboard = () => {
             </Alert>
           )}
 
-          {!shiftsLoading && hasShifts && (
-            <ShiftsTable shifts={shifts} />
-          )}
+          {!shiftsLoading && hasShifts && <ShiftsTable shifts={shifts} />}
 
           {!shiftsLoading && shifts.length === 0 && (
             <Alert status="info">
@@ -164,7 +166,7 @@ const EmployeeDashboard = () => {
           )}
         </Box>
 
-        {/* WORK HOURS SECTION */}
+        {/* WORK HOURS */}
         <Box id="section-hours">
           {hasWorkHours && <WorkHoursChart workHours={workHours} />}
 
@@ -172,6 +174,23 @@ const EmployeeDashboard = () => {
             <Alert status="info">
               <AlertIcon />
               No work hours available.
+            </Alert>
+          )}
+        </Box>
+
+        {/* WEATHER */}
+        <Box id="section-weather">
+          <WeatherSection />
+        </Box>
+
+        {/* ROUTES */}
+        <Box id="section-routes">
+          {hasRoutes && <RoutesList routes={routes} />}
+
+          {!loading && routes.length === 0 && (
+            <Alert status="info">
+              <AlertIcon />
+              No routes assigned.
             </Alert>
           )}
         </Box>
