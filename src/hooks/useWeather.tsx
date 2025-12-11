@@ -1,3 +1,4 @@
+// src/hooks/useWeather.ts
 import { useEffect, useState } from "react";
 
 type DailyWeather = {
@@ -7,7 +8,23 @@ type DailyWeather = {
   precipitation_probability_max?: number[];
 };
 
-type WeatherResponse = {
+type CurrentWeather = {
+  temperature: number;
+  windspeed: number;
+  weathercode: number;
+  is_day: number;
+  time: string;
+};
+
+type HourlyWeather = {
+  time: string[];
+  precipitation_probability?: number[];
+  cloudcover?: number[];
+};
+
+export type WeatherResponse = {
+  current_weather?: CurrentWeather;
+  hourly?: HourlyWeather;
   daily: DailyWeather;
 };
 
@@ -17,7 +34,7 @@ interface UseWeatherOptions {
   days?: number;
 }
 
-export const useWeather = ({ lat, lon, days = 7 }: UseWeatherOptions) => {
+export const useWeather = ({ lat, lon, days = 1 }: UseWeatherOptions) => {
   const [data, setData] = useState<WeatherResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,9 +51,11 @@ export const useWeather = ({ lat, lon, days = 7 }: UseWeatherOptions) => {
           `https://api.open-meteo.com/v1/forecast` +
           `?latitude=${lat}` +
           `&longitude=${lon}` +
+          `&current_weather=true` +
+          `&hourly=precipitation_probability,cloudcover` +
           `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max` +
           `&forecast_days=${days}` +
-          `&timezone=Europe%2FCopenhagen`;
+          `&timezone=auto`;
 
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error("Failed to fetch weather");
