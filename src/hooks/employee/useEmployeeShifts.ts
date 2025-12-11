@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { Shift } from "../entities/Shift";
+import type { Shift } from "../../entities/Shift";
 
 // Helpers
 const pad = (n: number) => String(n).padStart(2, "0");
