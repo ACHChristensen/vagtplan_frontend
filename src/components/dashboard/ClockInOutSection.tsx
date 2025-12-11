@@ -10,7 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ClockMode } from "../../hooks/employee/useEmployeeShifts";
+import type { ClockMode } from "../../hooks/employee/useShifts";
 
 interface Props {
   mode: ClockMode; // "in" | "out" | "unavailable"

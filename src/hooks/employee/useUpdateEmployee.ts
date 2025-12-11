@@ -1,5 +1,5 @@
-import ApiClient from "../services/api-client";
-import type { Employee } from "../entities/Employee";
+import ApiClient from "../../services/api-client";
+import type { Employee } from "../../entities/Employee";
 
 const employeeClient = new ApiClient<Employee>("/Employees");
 

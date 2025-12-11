@@ -14,17 +14,17 @@ import DashboardLayout, {
 } from "../components/DashboardLayout";
 
 import EditPersonalInfoModal from "../components/EditPersonalInfoModal";
-import ClockInOutSection from "../components/employee/ClockInOutSection";
-import PersonalInfoCard from "../components/employee/PersonalInfoCard";
-import RoutesList from "../components/employee/RoutesList";
-import ShiftsTable from "../components/employee/ShiftsTable";
-import WeatherSection from "../components/employee/WeatherSection";
-import WorkHoursChart from "../components/employee/WorkHoursChart";
+import ClockInOutSection from "../components/dashboard/ClockInOutSection";
+import PersonalInfoCard from "../components/dashboard/PersonalInfoCard";
+import RoutesList from "../components/dashboard/RoutesList";
+import ShiftsTable from "../components/dashboard/ShiftsTable";
+import WeatherSection from "../components/dashboard/WeatherSection";
+import WorkHoursChart from "../components/dashboard/WorkHoursChart";
 
 
 import type { Employee } from "../entities/Employee";
-import { useEmployeeShifts } from "../hooks/employee/useEmployeeShifts";
-import { useEmployeeDashboard } from "../hooks/employee/useEmployeeDashboard";
+import { useEmployeeDashboard } from "../hooks/employee/useDashboardData";
+import { useEmployeeShifts } from "../hooks/employee/useShifts";
 import { useUpdateEmployee } from "../hooks/employee/useUpdateEmployee";
 
 const EmployeeDashboard = () => {
