@@ -33,9 +33,9 @@ jobs:
       #  run: npm run lint
       #  working-directory: .
 
-      # - name: Run tests
-      #   run: npm test
-      #   working-directory: "**/vagtplan_frontend/**"
+      - name: Run tests
+        run: npm test
+        working-directory: .
 
       - name: Build Vite project
         run: npm run build
