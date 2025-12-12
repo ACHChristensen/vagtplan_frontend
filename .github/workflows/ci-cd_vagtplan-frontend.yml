@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "vagtplan_frontend/**"
+      - "**/vagtplan_frontend/**"
       - ".github/workflows/ci-cd_vagtplan-frontend.yml"
 
   pull_request:
@@ -13,7 +13,7 @@ on:
     branches:
       - main
     paths:
-      - "vagtplan_frontend/**"
+      - "**/vagtplan_frontend/**"
       - ".github/workflows/ci-cd_vagtplan-frontend.yml"
 
 jobs:
@@ -27,20 +27,19 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: vagtplan_frontend
+        working-directory: "**/vagtplan_frontend/**"
 
       - name: Run ESLint
         run: npm run lint
-        working-directory: vagtplan_frontend
+        working-directory: "**/vagtplan_frontend/**"
 
-      # optional if you have tests
       # - name: Run tests
       #   run: npm test
-      #   working-directory: vagtplan_frontend
+      #   working-directory: "**/vagtplan_frontend/**"
 
       - name: Build Vite project
         run: npm run build
-        working-directory: vagtplan_frontend
+        working-directory: .
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
