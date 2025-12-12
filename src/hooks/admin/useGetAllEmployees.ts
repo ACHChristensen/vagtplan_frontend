@@ -35,7 +35,7 @@ export const useGetAllEmployees = () => {
   const createEmployee = useCallback(
     async (payload: EmployeePayload) => {
       const created = await employeeService.createEmployee(payload);
-      setEmployees((prev) => [...prev, created]);
+      setEmployees((prev) => prev.concat({employeeId:prev.length+1, ...payload}));
       return created;
     },
     []

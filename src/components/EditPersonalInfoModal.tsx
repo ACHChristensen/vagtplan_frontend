@@ -26,7 +26,8 @@ interface Props {
   onSave: (updated: Employee) => void;
 }
 
-interface FormErrors {
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+type FormErrors = {
   firstName?: string;
   lastName?: string;
   email?: string;

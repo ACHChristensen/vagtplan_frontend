@@ -347,7 +347,8 @@ function AdminBicyclesSection()
             <Button
               colorScheme="blue"
               mr={3}
-              onClick={() => void handleSave}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onClick={handleSave}
               isLoading={saving}
               isDisabled={!isFormValid}
             >

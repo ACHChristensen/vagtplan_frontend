@@ -15,7 +15,8 @@ export const useUpdateEmployee = () => {
         Address: employee.address
       };
 
-      await employeeClient.update(employee.employeeId, payload as Partial<Employee>);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      await employeeClient.update(employee.employeeId, payload as any);
 
       return { success: true };
     } catch (err: unknown) {

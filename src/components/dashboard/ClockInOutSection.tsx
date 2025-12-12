@@ -210,7 +210,8 @@ const ClockInOutSection = ({
       <Button
         width={{ base: "100%", md: "auto" }}
         colorScheme={mode === "out" ? "red" : "green"}
-        onClick={void handleClick}
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        onClick={handleClick}
         isLoading={busy || loading}
         isDisabled={mode === "unavailable" || !!error}
       >

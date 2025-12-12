@@ -31,8 +31,7 @@ import {
 import { useMemo, useState } from "react";
 import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
 import { useRoutes } from "../../hooks/admin/useRoutes";
-import type { Route } from "../../services/routeService";
-import type { RoutePayload } from "../../services/routeService";
+import type { Route, RoutePayload } from "../../services/routeService";
 
 type Mode = "create" | "edit";
 
@@ -242,7 +241,7 @@ const AdminRoutesSection = () => {
                         size="sm"
                         variant="outline"
                         colorScheme="blue"
-                        onClick={() => openEdit(r)}
+                        onClick={()=> openEdit(r)}
                       />
                       <IconButton
                         aria-label="Delete route"
@@ -251,7 +250,7 @@ const AdminRoutesSection = () => {
                         variant="outline"
                         colorScheme="red"
                         isLoading={deletingId === r.id}
-                        onClick={void handleDelete(r.id)}
+                        onClick={()=> void handleDelete(r.id)}
                       />
                     </HStack>
                   </Td>
@@ -299,7 +298,8 @@ const AdminRoutesSection = () => {
             <Button
               colorScheme="blue"
               mr={3}
-              onClick={void handleSave}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onClick={handleSave}
               isLoading={saving}
               isDisabled={!isFormValid}
             >
