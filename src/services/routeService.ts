@@ -1,5 +1,38 @@
+// src/services/routeService.ts
 import ApiClient from "./api-client";
-import type { Route } from "../entities/Route";
 
-export const routeService = new ApiClient<Route>("/routes");
-export type { Route };
+// Matches RouteDto from backend: { id, routeNumber }
+export interface Route {
+  id: number;
+  routeNumber: number;
+}
+
+// Payload for create/update
+export type RoutePayload = {
+  routeNumber: number;
+};
+
+class RouteService extends ApiClient<Route> {
+  constructor() {
+    super("Routes"); // -> /api/Routes
+  }
+
+  getAllRoutes() {
+    return this.getAll();
+  }
+
+  createRoute(payload: RoutePayload) {
+    // backend expects { routeNumber }
+    return this.create(payload);
+  }
+
+  updateRoute(id: number, payload: RoutePayload) {
+    return this.update(id, payload);
+  }
+
+  deleteRoute(id: number) {
+    return this.delete(id);
+  }
+}
+
+export const routeService = new RouteService();
