@@ -235,10 +235,6 @@ const AdminBicyclesSection: React.FC = () => {
       shadow="sm"
     >
       <HStack justify="space-between" mb={4}>
-        <Text fontWeight="semibold" color="gray.700">
-          Bicycles
-        </Text>
-
         <Button
           size="sm"
           leftIcon={<FiPlus />}
