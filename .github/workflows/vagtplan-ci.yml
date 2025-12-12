@@ -30,3 +30,6 @@ jobs:
         
      # - name: Run tests
       #  run: npm test
+
+      - name: Running dev
+        run: npm run dev
