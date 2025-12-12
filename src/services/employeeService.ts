@@ -1,3 +1,4 @@
+// src/services/employeeService.ts
 import ApiClient, { axiosInstance } from "./api-client";
 import type { Employee } from "../entities/Employee";
 
@@ -9,13 +10,22 @@ export type User = {
   employee?: Employee | null;
 };
 
+// Payload used by create / update endpoints
+export type EmployeePayload = {
+  firstName: string;
+  lastName: string;
+  address: string;
+  phone: string;
+  email: string;
+};
+
 class EmployeeService extends ApiClient<Employee> {
   constructor() {
-    super("Employees"); // base path: /Employees
+    super("Employees"); // base path => /Employees (via ApiClient)
   }
 
   // ---------------------------------------
-  // GET employee by ID
+  // GET employee by ID (used by dashboard)
   // ---------------------------------------
   async getById(id: number): Promise<Employee> {
     const response = await axiosInstance.get(`/Employees/${id}`);
@@ -30,6 +40,25 @@ class EmployeeService extends ApiClient<Employee> {
       `/Employee/get-employee-routes-by-id/${employeeId}`
     );
     return response.data;
+  }
+
+  // ---------------------------------------
+  // ADMIN helpers using generic ApiClient methods
+  // ---------------------------------------
+  getAllEmployees() {
+    return this.getAll(); // GET /Employees
+  }
+
+  createEmployee(payload: EmployeePayload) {
+    return this.create(payload); // POST /Employees
+  }
+
+  updateEmployee(id: number, payload: EmployeePayload) {
+    return this.update(id, payload); // PUT /Employees/:id
+  }
+
+  deleteEmployee(id: number) {
+    return this.delete(id); // DELETE /Employees/:id
   }
 }
 

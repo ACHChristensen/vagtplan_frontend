@@ -1,14 +1,22 @@
+// src/components/DashboardLayout.tsx
 import { Box, Button, Flex, Heading, HStack, Text } from "@chakra-ui/react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 type Role = "admin" | "employee" | "unknown";
 
 export interface DashboardNavItem {
   label: string;
-  targetId: string; // id of the section to scroll to
+  /**
+   * If set, clicking scrolls to this element id on the page.
+   */
+  targetId?: string;
+  /**
+   * If set, clicking navigates to this route using react-router.
+   */
+  to?: string;
 }
 
 interface DashboardLayoutProps {
@@ -55,8 +63,14 @@ const DashboardLayout = ({
   children,
 }: DashboardLayoutProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Only care about items that actually scroll (have targetId)
+  const firstSectionId =
+    navItems.find((n) => n.targetId)?.targetId ?? null;
+
   const [activeSectionId, setActiveSectionId] = useState<string | null>(
-    navItems[0]?.targetId ?? null
+    firstSectionId
   );
 
   const role = useMemo<Role>(() => {
@@ -83,30 +97,32 @@ const DashboardLayout = ({
   }, [role]);
 
   useEffect(() => {
-    if (!navItems.length) return;
-
     // Ensure initial active id is valid when navItems changes
-    setActiveSectionId((prev) => prev ?? navItems[0]?.targetId ?? null);
+    setActiveSectionId((prev) => prev ?? firstSectionId);
 
-    const elements = navItems
-      .map((n) => document.getElementById(n.targetId))
+    const sectionItems = navItems.filter((n) => n.targetId);
+    if (!sectionItems.length) return;
+
+    const elements = sectionItems
+      .map((n) => (n.targetId ? document.getElementById(n.targetId) : null))
       .filter(Boolean) as HTMLElement[];
 
     if (!elements.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Pick the most visible intersecting entry
         const visible = entries
           .filter((e) => e.isIntersecting)
-          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0));
+          .sort(
+            (a, b) =>
+              (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0)
+          );
 
         if (visible[0]?.target?.id) {
           setActiveSectionId(visible[0].target.id);
         }
       },
       {
-        // This makes "active" switch feel natural while scrolling
         root: null,
         threshold: [0.2, 0.4, 0.6, 0.8],
         rootMargin: "-20% 0px -55% 0px",
@@ -114,9 +130,8 @@ const DashboardLayout = ({
     );
 
     elements.forEach((el) => observer.observe(el));
-
     return () => observer.disconnect();
-  }, [navItems]);
+  }, [navItems, firstSectionId]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -154,18 +169,31 @@ const DashboardLayout = ({
           </Text>
         </Box>
 
-        {/* Optional in-page navigation */}
+        {/* Optional in-page navigation / route navigation */}
         {navItems.length > 0 && (
           <HStack spacing={2} flexWrap="wrap">
             {navItems.map((item) => {
-              const isActive = item.targetId === activeSectionId;
+              const isRouteItem = !!item.to;
+              const isScrollItem = !!item.targetId;
+
+              const isActive = isRouteItem
+                ? location.pathname === item.to
+                : item.targetId === activeSectionId;
+
+              const onClick = () => {
+                if (item.to) {
+                  navigate(item.to);
+                } else if (item.targetId) {
+                  handleScrollTo(item.targetId);
+                }
+              };
 
               return (
                 <Button
-                  key={item.targetId}
+                  key={item.targetId ?? item.label}
                   {...NAV_BUTTON_BASE}
                   {...(isActive ? NAV_BUTTON_ACTIVE : {})}
-                  onClick={() => handleScrollTo(item.targetId)}
+                  onClick={onClick}
                   aria-current={isActive ? "true" : undefined}
                 >
                   {item.label}

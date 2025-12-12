@@ -16,8 +16,7 @@ import DashboardLayout, {
 
 import EditPersonalInfoModal from "../components/EditPersonalInfoModal";
 
-// 🔁 Shared / neutral dashboard components
-// If you still have them under components/employee, update these paths accordingly.
+// Shared / neutral dashboard components
 import ClockInOutSection from "../components/dashboard/ClockInOutSection";
 import PersonalInfoCard from "../components/dashboard/PersonalInfoCard";
 import RoutesList from "../components/dashboard/RoutesList";
@@ -26,7 +25,7 @@ import WeatherSection from "../components/dashboard/WeatherSection";
 import WorkHoursChart from "../components/dashboard/WorkHoursChart";
 
 import type { Employee } from "../entities/Employee";
-import { useEmployeeDashboard } from "../hooks/useDashboardData";
+import { useEmployeeDashboard as useDashboardData } from "../hooks/useDashboardData";
 import { useShifts } from "../hooks/useShifts";
 import { useUpdateEmployee } from "../hooks/useUpdateEmployee";
 
@@ -38,7 +37,7 @@ const AdminDashboard = () => {
     workHours,
     loading,
     error,
-  } = useEmployeeDashboard();
+  } = useDashboardData();
 
   const {
     shifts,
@@ -94,16 +93,15 @@ const AdminDashboard = () => {
   );
   const hasShifts = useMemo(() => shifts && shifts.length > 0, [shifts]);
 
-  // Same nav sections as employee dashboard
+  // 🔹 Nav sections INCLUDING Management
   const navItems: DashboardNavItem[] = [
+    { label: "Management", to: "/admin/management" },
     { label: "Profile", targetId: "section-profile" },
     { label: "Clock in/out", targetId: "section-clock" },
     { label: "Shifts", targetId: "section-shifts" },
     { label: "Work hours", targetId: "section-hours" },
-    { label: "weather", targetId: "weather-section" },
+    { label: "Weather", targetId: "section-weather" },
     { label: "Routes", targetId: "section-routes" },
-
-    // Later i'll add: { label: "Management", targetId: "section-management" },
   ];
 
   return (
@@ -127,7 +125,7 @@ const AdminDashboard = () => {
           </Alert>
         )}
 
-        {/* PROFILE + WEATHER */}
+        {/* PROFILE */}
         <Box id="section-profile">
           {employee && (
             <PersonalInfoCard user={employee} onEditClick={handleEditClick} />
@@ -184,12 +182,12 @@ const AdminDashboard = () => {
             </Alert>
           )}
         </Box>
-        
-        {/* Weather */}
-        <Box mt={4}>
+
+        {/* WEATHER */}
+        <Box id="section-weather">
           <WeatherSection />
         </Box>
-        
+
         {/* ROUTES */}
         <Box id="section-routes">
           {hasRoutes && <RoutesList routes={routes} />}
@@ -201,7 +199,7 @@ const AdminDashboard = () => {
             </Alert>
           )}
         </Box>
-        
+
         {/* EDIT PROFILE MODAL */}
         <EditPersonalInfoModal
           user={modalEmployee}
